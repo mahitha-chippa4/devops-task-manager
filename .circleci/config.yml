@@ -1,0 +1,135 @@
+version: 2.1
+
+# DevOps Course Project: Continuous Integration & Testing Pipeline
+# Automated pipeline configuration for FastAPI backend and React frontend
+
+jobs:
+  backend-test-and-lint:
+    docker:
+      - image: cimg/python:3.11
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-backend-deps-{{ checksum "backend/requirements-dev.txt" }}
+            - v1-backend-deps-
+
+      - run:
+          name: Install Backend Dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r backend/requirements-dev.txt
+
+      - save_cache:
+          paths:
+            - ./venv
+          key: v1-backend-deps-{{ checksum "backend/requirements-dev.txt" }}
+
+      - run:
+          name: Code Quality & Linting (Ruff)
+          command: |
+            . venv/bin/activate
+            cd backend
+            ruff check app tests
+
+      - run:
+          name: Run Pytest Suite & Coverage
+          command: |
+            . venv/bin/activate
+            cd backend
+            mkdir -p test-results
+            pytest tests \
+              --junitxml=test-results/junit.xml \
+              --cov=app \
+              --cov-report=xml:test-results/coverage.xml \
+              --cov-report=term
+
+      - store_test_results:
+          path: backend/test-results
+
+      - store_artifacts:
+          path: backend/test-results
+          destination: backend-test-reports
+
+  frontend-build-and-test:
+    docker:
+      - image: cimg/node:20.18
+    working_directory: ~/repo
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+            - v1-frontend-deps-{{ checksum "frontend/package.json" }}
+            - v1-frontend-deps-
+
+      - run:
+          name: Install Frontend Dependencies
+          command: |
+            cd frontend
+            npm ci
+
+      - save_cache:
+          paths:
+            - frontend/node_modules
+          key: v1-frontend-deps-{{ checksum "frontend/package.json" }}
+
+      - run:
+          name: Run Frontend Unit Tests
+          command: |
+            cd frontend
+            mkdir -p test-results
+            npm test
+
+      - run:
+          name: Build Frontend Production Bundle
+          command: |
+            cd frontend
+            npm run build
+
+      - store_test_results:
+          path: frontend/test-results
+
+      - store_artifacts:
+          path: frontend/dist
+          destination: frontend-dist
+
+  pipeline-summary:
+    docker:
+      - image: cimg/base:stable
+    working_directory: ~/repo
+    steps:
+      - run:
+          name: Confirm Pipeline Completion
+          command: |
+            echo "======================================================="
+            echo "Continuous Integration & Testing Pipeline Completed"
+            echo "Status: SUCCESS"
+            echo "Backend Tests: Passed"
+            echo "Frontend Build & Tests: Passed"
+            echo "JUnit Reports Published to CircleCI"
+            echo "======================================================="
+
+workflows:
+  version: 2
+  ci-pipeline:
+    jobs:
+      - backend-test-and-lint:
+          filters:
+            branches:
+              only: /.*/
+      - frontend-build-and-test:
+          filters:
+            branches:
+              only: /.*/
+      - pipeline-summary:
+          requires:
+            - backend-test-and-lint
+            - frontend-build-and-test
+          filters:
+            branches:
+              only: /.*/
