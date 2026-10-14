@@ -57,28 +57,22 @@
 - [x] DevOps Viva Questions and Answers (`docs/VIVA_QUESTIONS.md`).
 - [x] Comprehensive Master README (`README.md`).
 
+### Cloud CI/CD & Remote Verification
+- [x] GitHub remote repository created and connected (`mahitha-chippa4/devops-task-manager`).
+- [x] CircleCI project linked and building on pushes and PRs.
+- [x] Initial full pipeline run verified: **PASSED (Green)** on commit `7a0e497` (34s).
+- [x] Controlled regression failure demonstrated on branch `test-pipeline-failure` (commit `7c9620e`): caught by `backend-test-and-lint`, and workflow gatekeeper blocked downstream jobs.
+- [x] Clean state verified and restored on `main`.
+
 ---
 
-## 2. Pending External Steps (User Authorization Required)
+## 2. Optional Enhancement: Live CircleCI Token Integration
 
-Because creating remote accounts and pushing to cloud services requires your personal GitHub and CircleCI credentials, the following manual steps remain for you to connect the remote pipeline:
+If you want the in-app **CI Pipeline** modal in the React dashboard to live-poll your runs via the backend proxy:
+1. Generate a token at [CircleCI Personal API Tokens](https://app.circleci.com/settings/user/tokens).
+2. Set it in your backend environment:
+   ```bash
+   export CIRCLECI_TOKEN="your_personal_circleci_token"
+   ```
+   *(Note: The project slug `gh/mahitha-chippa4/devops-task-manager` is already preset as default).*
 
-1. **Create GitHub Repository**:
-   - Create a repository named `devops-task-manager` on your GitHub account.
-   - Run:
-     ```bash
-     git remote add origin https://github.com/<your-username>/devops-task-manager.git
-     git branch -M main
-     git push -u origin main
-     ```
-2. **Connect Repository in CircleCI**:
-   - Log into [CircleCI](https://app.circleci.com) using GitHub.
-   - Click **Set Up Project** next to `devops-task-manager`.
-   - Select the existing `.circleci/config.yml` on `main`.
-3. **(Optional) Configure CircleCI Proxy Token**:
-   - Create a personal API token in CircleCI under **User Settings > Personal API Tokens**.
-   - Export it in your backend environment:
-     ```bash
-     export CIRCLECI_TOKEN="your_token"
-     export CIRCLECI_PROJECT_SLUG="gh/<your-username>/devops-task-manager"
-     ```

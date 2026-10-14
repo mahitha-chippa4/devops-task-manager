@@ -50,7 +50,7 @@ def get_health():
 async def get_pipeline_status():
     """Proxy endpoint to securely query CircleCI API without leaking tokens to the frontend."""
     circle_token = os.getenv("CIRCLECI_TOKEN")
-    project_slug = os.getenv("CIRCLECI_PROJECT_SLUG")  # e.g. "gh/username/devops-ci-pipeline"
+    project_slug = os.getenv("CIRCLECI_PROJECT_SLUG", "gh/mahitha-chippa4/devops-task-manager")
 
     if not circle_token or not project_slug:
         return PipelineStatusResponse(

@@ -127,9 +127,10 @@ The failing test file was removed. Pytest was rerun across the entire suite, res
 
 ---
 
-## 5. Verification Distinction
-
+## 5. Verification Distinction & Live Evidence
+ 
 | Verification Tier | Environment | Status | Evidence |
 |---|---|---|---|
-| **Locally Verified** | Local Developer Environment | **VERIFIED & PASSED** | 24 Pytest tests pass, 1 Vitest test passes, Ruff check passes (0 errors), CircleCI config structurally validated. |
-| **Remotely Verified** | CircleCI Cloud Platform | **READY FOR CONNECTION** | `.circleci/config.yml` is committed in repository. Remote run triggers automatically upon adding the remote GitHub repository to CircleCI. |
+| **Locally Verified** | Local Developer Environment | **VERIFIED & PASSED** | 24 Pytest tests pass (0.16s), 1 Vitest test passes, Ruff check passes (0 errors), CircleCI config schema validated. |
+| **Remotely Verified** | CircleCI Cloud Platform | **VERIFIED & PASSED** | Pipeline #1 on `main` (`7a0e497`) passed all 3 jobs (`frontend-build-and-test`, `backend-test-and-lint`, `pipeline-summary`) in 34s.<br>Pipeline #2 on branch `test-pipeline-failure` (`7c9620e`) caught regression in `backend-test-and-lint` and blocked `pipeline-summary`. |
+
