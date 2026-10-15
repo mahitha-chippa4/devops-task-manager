@@ -12,7 +12,7 @@ router = APIRouter(prefix="/tasks", tags=["tasks"])
 @router.post(
     "",
     response_model=schemas.TaskResponse,
-    status_code=status.HTTP_201_CREATED,
+    status_code=status.HTTP_200_OK,
     summary="Create a new task",
 )
 def create_task(
